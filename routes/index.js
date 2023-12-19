@@ -19,8 +19,9 @@ router.get('/feed', isLoggedIn, function (req, res) {
   res.render('feed', { footer: true });
 });
 
-router.get('/profile', isLoggedIn, function (req, res) {
-  res.render('profile', { footer: true });
+router.get('/profile', isLoggedIn,async function (req, res) {
+  const user = await userModel.findOne({ username: req.session.passport.user })
+  res.render('profile', { footer: true,user });
 });
 
 router.get('/search', isLoggedIn, function (req, res) {
@@ -29,11 +30,11 @@ router.get('/search', isLoggedIn, function (req, res) {
 
 router.get('/edit', isLoggedIn, async function (req, res) {
   const user = await userModel.findOne({ username: req.session.passport.user })
-  res.render('edit', { footer: true });
+  res.render('edit', { footer: true,user });
 });
 
 router.get('/upload', isLoggedIn, function (req, res) {
-  res.render('upload', { footer: true,user });
+  res.render('upload', { footer: true});
 });
 
 router.post('/register', function (req, res, next) {
@@ -67,7 +68,11 @@ router.post('/update', upload.single('image'), async function (req, res) {
   const user = await userModel.findOneAndUpdate({ username: req.session.passport.user },
     { username: req.body.username, name: req.body.name, bio: req.body.bio },
     { new: true })
-  user.profileImage = req.file.filename
+
+    if(req.file){
+       user.profileImage = req.file.filename
+    }
+ 
   await user.save()
   res.redirect('/profile')
 })
