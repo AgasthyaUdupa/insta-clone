@@ -3,6 +3,7 @@ var router = express.Router();
 const userModel = require('./users');
 const passport = require('passport');
 const localStrategy = require('passport-local')
+const upload = require('./multer')
 
 passport.use(new localStrategy(userModel.authenticate()))
 
@@ -59,6 +60,10 @@ router.post('/logout', function (req, res, next) {
       res.redirect('/')
   })
 });
+
+router.post('/update',function(req,res){
+
+})
 
 function isLoggedIn(req,res,next){
   if(req.isAuthenticated()) return next()
